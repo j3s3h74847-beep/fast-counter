@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>신속 민원 창구 프로토타입</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--g:#3f8f74;--gd:#2d6e58;--gl:#e6f3ee;--bg:#eef2f0;--card:#fff;--tx:#1c2825;--mu:#65736e;--ln:#d8e2de;--wn:#b4440c;--wb:#fff0e6;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--g:#5fbf9f;--gd:#7ed3b6;--gl:#1d3a31;--bg:#111a17;--card:#18231f;--tx:#e6efec;--mu:#9bada6;--ln:#2a3a35;--wn:#ffa66b;--wb:#3a2418;color-scheme:dark}}
+:root[data-theme="dark"]{--g:#5fbf9f;--gd:#7ed3b6;--gl:#1d3a31;--bg:#111a17;--card:#18231f;--tx:#e6efec;--mu:#9bada6;--ln:#2a3a35;--wn:#ffa66b;--wb:#3a2418;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;line-height:1.5;background-color:var(--bg)}
+.app{max-width:440px;margin:0 auto;min-height:100vh;background:var(--card);display:flex;flex-direction:column}
+header{padding:18px 20px 12px;border-bottom:1px solid var(--ln)}
+.brand{display:flex;justify-content:space-between;align-items:baseline}
+.brand b{font-size:20px;letter-spacing:-.02em}.brand b span{color:var(--g)}
+.brand small{color:var(--mu);font-size:12px}
+.steps{display:flex;gap:6px;margin-top:14px}
+.st{flex:1;font-size:11px;color:var(--mu);text-align:center}
+.st i{display:block;height:4px;border-radius:2px;background:var(--ln);margin-bottom:6px}
+.st.on{color:var(--tx);font-weight:700}.st.on i,.st.done i{background:var(--g)}
+main{flex:1;padding:22px 20px 28px}
+h2{font-size:22px;letter-spacing:-.03em;margin:0 0 6px}
+p.sub{color:var(--mu);font-size:14px;margin:0 0 18px}
+.tk{background:var(--gl);border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.tk b{font-size:26px;color:var(--gd)}.tk span{font-size:13px;color:var(--mu)}
+.opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--card);color:var(--tx);border:1.5px solid var(--ln);border-radius:14px;padding:14px;margin-bottom:10px;font:inherit;cursor:pointer}
+.opt.sel{border-color:var(--g);background:var(--gl)}
+.opt b{display:block;font-size:16px}.opt small{color:var(--mu)}
+.dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--ln);flex:none}
+.opt.sel .dot{border:6px solid var(--g)}
+.btn{width:100%;border:0;border-radius:14px;background:var(--g);color:#fff;font:inherit;font-weight:700;font-size:16px;padding:15px;margin-top:14px;cursor:pointer}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--gd);border:1.5px solid var(--g)}
+.doc{border:1.5px solid var(--ln);border-radius:14px;padding:14px;margin-bottom:10px}
+.doc.ok{border-color:var(--g)}.doc.miss{border-color:var(--wn);background:var(--wb)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.row b{font-size:15px}.row small{color:var(--mu);display:block}
+.sm{border:1.5px solid var(--g);background:transparent;color:var(--gd);border-radius:10px;padding:8px 12px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap}
+.tag{font-size:12px;font-weight:700;color:var(--gd)}.tag.w{color:var(--wn)}
+.msg{margin-top:10px;font-size:13px;color:var(--wn)}
+.spin{width:16px;height:16px;border:2.5px solid var(--ln);border-top-color:var(--g);border-radius:50%;animation:sp .8s linear infinite;display:inline-block;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.warn{background:var(--wb);border-radius:14px;padding:14px;margin-top:12px;font-size:14px}
+.warn b{color:var(--wn)}
+label{display:block;font-size:13px;color:var(--mu);margin:14px 0 6px}
+label em{font-style:normal;background:var(--gl);color:var(--gd);border-radius:6px;padding:1px 6px;margin-left:6px;font-size:11px;font-weight:700}
+input[type=text]{width:100%;border:1.5px solid var(--ln);border-radius:12px;padding:12px;font:inherit;background:var(--card);color:var(--tx)}
+input:focus,button:focus-visible{outline:3px solid var(--g);outline-offset:1px}
+.chk{display:flex;gap:10px;align-items:flex-start;margin-top:18px;font-size:14px}
+.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
+.qr{width:132px;height:132px;margin:18px auto;border-radius:12px;background:repeating-conic-gradient(var(--tx) 0 25%,var(--card) 0 50%) 0 0/22px 22px;border:8px solid var(--card);outline:1.5px solid var(--ln)}
+.big{text-align:center}.big .n{font-size:46px;font-weight:800;color:var(--gd);letter-spacing:-.02em}
+.list{padding-left:18px;color:var(--mu);font-size:14px}
+.top{background:none;border:0;color:var(--mu);font:inherit;font-size:13px;margin-top:16px;cursor:pointer;text-decoration:underline}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.chip{border:1.5px solid var(--ln);background:var(--card);color:var(--tx);border-radius:12px;padding:11px 10px;font:inherit;font-size:14px;text-align:left;cursor:pointer;line-height:1.35}
+.chip.sel{border-color:var(--g);background:var(--gl);font-weight:700}
+h3{font-size:14px;color:var(--mu);margin:16px 0 8px}
+.bub{background:var(--gl);border-radius:4px 16px 16px 16px;padding:12px 14px;font-size:14px;margin-bottom:14px}
+.bub ul{margin:6px 0 0;padding-left:18px}
+.q{border:1.5px solid var(--g);border-radius:14px;padding:14px;margin:6px 0 4px}
+.q .row{margin-top:10px}.q .row button{flex:1}
+details{margin-top:14px;font-size:14px;color:var(--mu)}summary{cursor:pointer;color:var(--gd);font-weight:700}
+details li{margin:3px 0}
+.cam{position:fixed;inset:0;z-index:50;background:#0d1512;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:max(24px,env(safe-area-inset-top,0px)) 24px max(24px,env(safe-area-inset-bottom,0px));text-align:center}
+.cam p{margin:0;font-size:14px;color:#b5c7c0}
+.frm{width:min(300px,80vw);aspect-ratio:1.58;border:3px dashed #7ed3b6;border-radius:14px;background:#1c2a25;padding:18px;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.frm i{display:block;height:8px;border-radius:4px;background:#3a4d46}.frm i:nth-child(2){width:70%}.frm i:nth-child(3){width:85%}.frm b{font-size:13px;color:#7ed3b6}
+.shut{width:68px;height:68px;border-radius:50%;border:5px solid #fff;background:#3f8f74;cursor:pointer}
+.cam .top{color:#b5c7c0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.cc{border:1.5px solid #3a4d46;background:transparent;color:#d6e4de;border-radius:999px;padding:8px 12px;font:inherit;font-size:13px;cursor:pointer}.cc.on{background:#3f8f74;border-color:#3f8f74;color:#fff}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<div class="brand"><b>신속 <span>민원 창구</span></b><small>사창동 행정복지센터</small></div>
+<div class="steps" id="steps"></div>
+</header>
+<main id="v"></main>
+</div>
+<script>
+var ID=["신분증","앞면 전체가 보이게 촬영"],LEASE=["임대차계약서","확정일자·서명란 포함"];
+var QF=["가족관계가 복잡하거나 추가 확인이 필요한가요?","y","가족관계 추가 확인이 필요한 신고예요"];
+var QD=["구비서류가 모두 준비되어 있나요?","n","구비서류 확인이 필요한 민원이에요"];
+function I(n,d,q){return{n:n,docs:[ID].concat(d||[]),q:q}}
+var G=[["증명서 발급",[I("주민등록 등·초본"),I("가족관계증명서"),I("인감증명서(본인)",0,["본인이 직접 신청하나요?","n","대리인·위임관계 확인이 필요한 인감 민원이에요"]),I("지방세 완납·과세증명"),I("농지대장"),I("건축물관리대장"),I("토지이용계획확인원"),I("대학 졸업·재학·성적증명서"),I("복지대상자 증명서")]],
+["신고·신청",[I("인감 등록·변경",[["인감도장","지참한 도장을 촬영"]]),I("주민등록증 신규·재발급",[["증명사진","3.5×4.5cm 1매"]]),I("전입신고",[LEASE],["세대 구성이나 신고 내용에 추가 확인이 필요한가요?","y","세대 구성 확인이 필요한 전입신고예요"]),I("확정일자 부여",[LEASE]),I("주민등록 재등록",[["거주 확인서류","주소를 확인할 수 있는 서류"]],QD),I("출생신고",[["출생증명서",""]],QF),I("사망신고",[["사망진단서",""]],QF),I("민방위교육 면제·유예",[["사유 증빙서류",""]],QD)]]];
+var PR=["기초생활보장 수급권자 신청","기초연금 신청","장애인 등록 신청","보육료·유아학비 지원 신청","긴급복지·긴급지원 상담","통합사례관리·복지 사각지대 상담","주거·생계 복지 상담","방문 보건·건강취약계층 서비스 연계","일상돌봄·긴급돌봄 지원 상담","가사간병·의료·요양 통합돌봄 상담","에너지바우처·에너지효율개선 상담","복잡한 세대 구성·주민등록 사실관계 확인","인감 대리발급 등 위임관계 확인","출생·사망 등 가족관계 추가 확인","서류 미비·자격 요건 확인이 필요한 복합 민원"];
+var S={step:0,it:null,ans:null,docs:{},tries:{},agree:false,h:null,f:{name:"홍길동",birth:"1985-03-12",addr:"충청북도 청주시 서원구 사창동 123-4",phone:"010-1234-5678",memo:"1"}};
+var L=["방문 목적","서류 안내·촬영","신청서 작성","최종 처리"];
+function $(x){return document.getElementById(x)}
+function go(n){S.step=n;S.h=null;draw();window.scrollTo(0,0)}
+function pick(g,i){S.it=G[g][1][i];S.ans=S.it.q?null:true;S.docs={};S.tries={};S.skip=false;S.res=null;draw()}
+function answer(a){var q=S.it.q;if(a===q[1]){S.h={reason:q[2]}}else{S.ans=true}draw()}
+function toPrecise(r){S.h={reason:r};draw();window.scrollTo(0,0)}
+function firstTodo(){for(var i=1;i<S.it.docs.length;i++)if(S.docs[i]!=="ok")return i;return 1}
+function openCam(w,k){S.cam=w;S.sel=k!==undefined?k:(w==="doc"?firstTodo():0);draw()}
+function closeCam(){S.cam="";draw()}
+function selDoc(k){S.sel=(k==="x"||k==="m")?k:+k;draw()}
+function snap(){
+ var w=S.cam,k=S.sel,D=S.it.docs;S.cam="";
+ if(w==="id"){S.docs[0]="busy";draw();setTimeout(function(){S.docs[0]="ok";draw()},900);return}
+ S.res={t:"busy"};draw();
+ setTimeout(function(){
+  if(k==="x"){S.res={t:"bad",m:"가족관계증명서로 인식했어요. "+S.it.n+"에 필요한 서류가 아니에요. 위 목록의 서류를 가져와 주세요."}}
+  else if(k==="m"){var j=firstTodo();S.docs[j]="miss";S.res={t:"bad",m:D[j][0]+"가 맞지만 일부 내용이 가려져 있어요. 다시 촬영해 주세요."}}
+  else if(S.docs[k]==="ok"){S.res={t:"bad",m:D[k][0]+"는 이미 확인했어요. 다른 서류를 촬영해 주세요."}}
+  else{S.docs[k]="ok";S.res={t:"ok",m:"AI가 "+D[k][0]+"(으)로 인식했어요. 필요한 서류가 맞아요."}}
+  draw();
+ },1000);
+}
+function chip(k,t){return '<button class="cc '+(S.sel===k?"on":"")+'" onclick="selDoc(\''+k+'\')">'+t+'</button>'}
+function cam(){
+ if(!S.cam)return "";
+ var D=S.it.docs,doc=S.cam==="doc",i,
+ nm=!doc?D[0][0]:S.sel==="x"?"가족관계증명서":S.sel==="m"?D[firstTodo()][0]:D[S.sel][0],
+ h='<div class="cam"><p>'+(doc?"시연용 화면이에요. 어떤 서류를 가져왔다고 할지 골라 주세요.":"시연용 화면이에요. 셔터를 누르면 촬영돼요.")+'</p>';
+ if(doc){h+='<div class="chips">';for(i=1;i<D.length;i++)h+=chip(i,D[i][0]);h+=chip("m","내용이 가려진 서류")+chip("x","관계없는 서류")+'</div>'}
+ return h+'<div class="frm"><b>샘플 '+nm+'</b><i></i><i></i><i></i></div><p>사각형 안에 서류를 맞춰 주세요</p><button class="shut" aria-label="촬영" onclick="snap()"></button><button class="top" onclick="closeCam()">닫기</button></div>';
+}
+function inp(k,v){S.f[k]=v}
+function agree(v){S.agree=v;draw()}
+function reset(){S.it=null;S.ans=null;S.docs={};S.tries={};S.agree=false;S.skip=false;S.res=null;go(0)}
+function draw(){
+ var h="";
+ for(var i=0;i<4;i++)h+='<div class="st '+(i===S.step?"on":i<S.step?"done":"")+'"><i></i>'+L[i]+'</div>';
+ $("steps").innerHTML=h;
+ $("v").innerHTML=(S.h?hand():[s0,s1,s2,s3][S.step]())+cam();
+}
+function s0(){
+ var h='<div class="tk"><div><span>내 번호표</span><br><b>A-027</b></div><span>신속 민원 창구<br>QR 접속 완료</span></div><h2>어떤 민원이세요?</h2><p class="sub">방문 목적을 선택해 주세요.</p>';
+ G.forEach(function(g,gi){
+  h+='<h3>'+g[0]+'</h3><div class="grid">';
+  g[1].forEach(function(it,ii){h+='<button class="chip '+(S.it===it?"sel":"")+'" onclick="pick('+gi+','+ii+')">'+it.n+'</button>'});
+  h+='</div>';
+ });
+ if(S.it&&S.it.q&&S.ans!==true){h+='<div class="q"><b>'+S.it.q[0]+'</b><div class="row"><button class="sm" onclick="answer(\'y\')">예</button><button class="sm" onclick="answer(\'n\')">아니오</button></div></div>'}
+ h+='<button class="btn" '+(S.it&&S.ans===true?"":"disabled")+' onclick="go(1)">다음: 서류 안내</button>';
+ return h+'<button class="btn ghost" onclick="toPrecise(\'자격 확인과 대면 상담이 필요한 복지·복합 민원이에요\')">복지·돌봄 등 상담이 필요해요</button>';
+}
+function dRow(i){
+ var d=S.it.docs[i],st=S.docs[i]||"",h='<div class="doc '+st+'"><div class="row"><div><b>'+d[0]+'</b>'+(d[1]?'<small>'+d[1]+'</small>':'')+'</div>';
+ if(st==="busy")h+='<span class="spin"></span>';
+ else if(st==="ok")h+='<span class="tag">확인 완료</span>';
+ else if(i===0)h+='<button class="sm" onclick="openCam(\'id\')">촬영하기</button>';
+ else if(st==="miss")h+='<button class="sm" onclick="openCam(\'doc\','+i+')">다시 촬영</button>';
+ else h+='<span class="tag" style="color:var(--mu)">미확인</span>';
+ return h+'</div></div>';
+}
+function s1(){
+ var t=S.it,ex=t.docs.length>1,h='<h2>서류를 확인해 주세요</h2>',bad=false,exok=true,i,r=S.res;
+ h+='<div class="bub"><b>AI 민원 도우미</b><br>'+t.n+'에는 아래 서류가 필요해요.<ul>';
+ t.docs.forEach(function(d){h+='<li>'+d[0]+'</li>'});
+ h+='</ul>신분증을 촬영해 주세요.'+(ex?' 따로 챙겨 온 서류는 촬영하면 필요한 서류가 맞는지 확인해 드려요.':'')+'</div>';
+ h+='<h3>본인 확인</h3>'+dRow(0);
+ if(ex){
+  h+='<h3>가져온 서류 확인 (선택)</h3>';
+  for(i=1;i<t.docs.length;i++){h+=dRow(i);if(S.docs[i]!=="ok")exok=false;if(S.docs[i]==="miss")bad=true}
+  if(r){
+   if(r.t==="busy")h+='<div class="doc busy"><div class="row"><b>AI가 서류를 확인하고 있어요</b><span class="spin"></span></div></div>';
+   else{h+='<div class="doc '+(r.t==="ok"?"ok":"miss")+'"><b>AI 확인 결과</b><div class="msg" style="color:var('+(r.t==="ok"?"--gd":"--wn")+')">'+r.m+'</div></div>';if(r.t==="bad")bad=true}
+  }
+  if(S.skip)h+='<div class="warn">가져온 서류 없이 진행해요. 창구에서 담당자가 서류를 추가로 확인할 수 있어요.<button class="top" onclick="S.skip=false;draw()">서류 다시 확인하기</button></div>';
+  else if(!exok)h+='<button class="btn" onclick="openCam(\'doc\')">가져온 서류 촬영하기</button><button class="btn ghost" onclick="S.skip=true;draw()">가져온 서류가 없어요</button>';
+ }
+ if(bad)h+='<div class="warn"><b>서류 누락·오류가 발견됐어요</b><br>다시 촬영하거나, 도움이 필요하면 정밀 상담 창구로 연계할 수 있어요.<button class="btn ghost" onclick="toPrecise(\'AI 사전 검토에서 서류 누락·오류가 발견됐어요\')">정밀 상담 창구로 연계</button></div>';
+ var ready=S.docs[0]==="ok"&&(exok||S.skip);
+ return h+'<button class="btn" '+(ready?"":"disabled")+' onclick="go(2)">다음: 신청서 작성</button><button class="top" onclick="go(0)">이전으로</button>';
+}
+function s2(){
+ var F=S.f,h='<h2>신청서가 자동으로 작성됐어요</h2><p class="sub">'+S.it.n+' · 촬영한 서류에서 읽어 온 내용이에요. 틀린 곳은 고쳐 주세요.</p>';
+ [["name","성명",1],["birth","생년월일",1],["addr","주소",1],["phone","연락처",0],["memo","발급 부수·비고",0]].forEach(function(r){
+  h+='<label for="'+r[0]+'">'+r[1]+(r[2]?'<em>OCR 자동 입력</em>':'')+'</label><input type="text" id="'+r[0]+'" value="'+F[r[0]]+'" oninput="inp(\''+r[0]+'\',this.value)">';
+ });
+ h+='<label class="chk"><input type="checkbox" '+(S.agree?"checked":"")+' onchange="agree(this.checked)"><span>개인정보 수집·이용에 동의합니다.</span></label>';
+ return h+'<button class="btn" '+(S.agree?"":"disabled")+' onclick="go(3)">신청서 제출</button><button class="top" onclick="go(1)">이전으로</button>';
+}
+function s3(){
+ return '<div class="big"><h2>제출이 끝났어요</h2><p class="sub">'+S.it.n+' · 신청서 제출 완료</p><div class="qr" role="img" aria-label="창구 확인용 QR"></div><div class="n">A-027</div><p class="sub">번호표 순서가 되면 창구로 오세요.<br>담당자가 서류와 본인을 확인한 뒤 최종 처리해요.</p></div><ul class="list"><li>신분증을 꼭 지참해 주세요.</li><li>수정할 내용은 담당자에게 말씀해 주세요.</li></ul><button class="top" onclick="reset()">처음으로 (프로토타입 다시 보기)</button>';
+}
+function hand(){
+ var a=["방문 목적·민원 내용 확인","담당자와 1:1 대면 상담","자격 요건·구비서류 검토","필요시 관련 부서·복지서비스 연계"],
+ h='<div class="tk"><div><span>상담 번호표</span><br><b>B-012</b></div><span>A-027에서 변경<br>정밀 상담 창구</span></div><h2>정밀 상담 창구로 안내해요</h2><p class="sub">'+S.h.reason+'. 작성한 내용과 촬영한 서류는 상담 담당자에게 함께 전달돼요. 번호표가 B-012로 바뀌었어요. 정밀 상담 창구 앞에서 호출을 기다려 주세요.</p><ol class="list">';
+ a.forEach(function(x){h+='<li>'+x+'</li>'});h+='</ol><details><summary>정밀 상담 창구 대상 민원 보기</summary><ul>';
+ PR.forEach(function(x){h+='<li>'+x+'</li>'});
+ return h+'</ul></details><button class="btn ghost" onclick="S.h=null;draw()">돌아가기</button><button class="top" onclick="reset()">처음으로</button>';
+}
+draw();
+</script>
+</body>
+</html>
