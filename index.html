@@ -180,7 +180,7 @@ function s2(){
  return h+'<button class="btn" '+(S.agree?"":"disabled")+' onclick="go(3)">신청서 제출</button><button class="top" onclick="go(1)">이전으로</button>';
 }
 function s3(){
- return '<div class="big"><h2>제출이 끝났어요</h2><p class="sub">'+S.it.n+' · 신청서 제출 완료</p><div class="qr" role="img" aria-label="창구 확인용 QR"></div><div class="n">A-027</div><p class="sub">번호표 순서가 되면 창구로 오세요.<br>담당자가 서류와 본인을 확인한 뒤 최종 처리해요.</p></div><ul class="list"><li>신분증을 꼭 지참해 주세요.</li><li>수정할 내용은 담당자에게 말씀해 주세요.</li></ul><button class="top" onclick="reset()">처음으로 (프로토타입 다시 보기)</button>';
+ return '<div class="big"><h2>제출이 끝났어요</h2><p class="sub">'+S.it.n+' · 신청서 제출 완료</p><div class="tk" style="justify-content:center;gap:8px;margin:18px 0"><span class="tag">신청서가 담당자 화면으로 전달됐어요</span></div><div class="n">A-027</div><p class="sub">번호표 순서가 되면 창구로 오세요.<br>담당자가 전달된 신청서와 서류, 본인 신분증을 확인한 뒤 최종 처리해요.</p></div><ul class="list"><li>신분증을 꼭 지참해 주세요.</li><li>수정할 내용은 담당자에게 말씀해 주세요.</li></ul><button class="top" onclick="reset()">처음으로 (프로토타입 다시 보기)</button>';
 }
 function hand(){
  var a=["방문 목적·민원 내용 확인","담당자와 1:1 대면 상담","자격 요건·구비서류 검토","필요시 관련 부서·복지서비스 연계"],
